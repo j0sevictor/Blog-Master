@@ -30,17 +30,13 @@
     //body-parser
         app.use(bodyParser.urlencoded({extended: true}))
         app.use(bodyParser.json())
-
     //handlebars
         const hhd = handlebars.create({
             defaultLayout: 'main',
             helpers: {}
         })
         app.engine('handlebars', hhd.engine)
-        app.set('view engine', 'handlebars')
-
-        
-
+        app.set('view engine', 'handlebars')      
     //mongoose
         mongoose.set('strictQuery', true)
         mongoose.connect('mongodb://127.0.0.1:27017/blog', {
@@ -50,13 +46,11 @@
             console.log('Conectado ao banco')
         }).catch((erro) => {
             console.log('Falha ao se conectar ao banco. ' + erro)
-        })
-        
+        })      
     //Public - pasta de arquivos estáticos
         app.use(express.static(path.join(__dirname,'public')))
 
 // Rotas da aplicação
-
     // Rotas definidas no arquivo admin.js
     app.use('/admin', admin)
 

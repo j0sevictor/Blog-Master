@@ -3,15 +3,11 @@ const router = express.Router()
 const ObjectId = require('mongoose').Types.ObjectId
 const Categoria = require('../models/Categoria')
 const Postagem = require('../models/Postagem')
-const { validarCategoria, mensagens_ptbr } = require('../controllers/categoriaSchema')
+const categoriaSchema = require('../controllers/categoriaSchema')
+const postagemSchema = require('../controllers/postagemSchema')
+const { messages } = require('joi-translation-pt-br')
 
-function vazio(valor){
-    if (!valor || typeof valor == undefined || valor == null){
-        return true
-    }
-    return true
-}
-
+/*
 function isValidObjectId(id){     
     if (ObjectId.isValid(id)) {
         if((String) (new ObjectId(id)) === id)
@@ -20,6 +16,7 @@ function isValidObjectId(id){
     }
     return false;
 }
+*/
 
 router.get('/', (req, res) => {
     return res.render('admin/index')
@@ -59,22 +56,24 @@ router.get('/', (req, res) => {
     })
 
     router.post('/categoria/nova', (req, res) => {
-        const cat = {
+        let categoriaForm = {
             nome: req.body.nome,
             slug: req.body.slug
         }
 
-        const { error } = validarCategoria(cat, mensagens_ptbr)
+        const { value, error } = categoriaSchema.validate(categoriaForm, { messages })
 
         if (error) {
-            return res.render('admin/adicionarCategoria', {erros: erros, nome: nome, slug: slug})
+            return res.render('admin/adicionarCategoria', {nome: categoriaForm.nome, slug: categoriaForm.slug, erro: error.message})
         }
 
+        categoriaForm = value
+
         Categoria.create({
-            nome: req.body.nome,
-            slug: req.body.slug
+            nome: categoriaForm.nome,
+            slug: categoriaForm.slug
         }).then(() => {
-            req.flash('success_msg', 'Categoria "' + req.body.nome + '" criada com sucesso!')
+            req.flash('success_msg', 'Categoria "' + categoriaForm.nome + '" criada com sucesso!')
             return res.redirect('/admin/categorias')
         }).catch((erro) => {
             req.flash('error_msg', 'Categoria não salva pelo sistema')
@@ -93,26 +92,24 @@ router.get('/', (req, res) => {
     })
 
     router.post('/categoria/editar/confirmado', (req, res) => {
-        let nome = req.body.nome
-        let slug = req.body.slug
-        let erros = []
-
-        if (!nome || typeof nome == undefined || nome == null) {
-            erros.push({texto: 'Nome inválido'})
-        }
-        if (!slug || typeof slug == undefined || slug == null) {
-            erros.push({texto: 'Slug inválido'})
+        let categoriaForm = {
+            nome: req.body.nome,
+            slug: req.body.slug
         }
 
-        if (erros.length > 0) {
-            return res.render('admin/editarCategoria', {erros: erros, nome: nome, slug: slug})
+        const { value, error } = categoriaSchema.validate(categoriaForm, { messages })
+
+        if (error) {
+            return res.render('admin/editarCategoria', {nome: categoriaForm.nome, slug: categoriaForm.slug, erro: error.message})
         }
+
+        categoriaForm = value
 
         Categoria.findByIdAndUpdate(req.body.id, {
-            nome: nome,
-            slug: slug
+            nome: categoriaForm.nome,
+            slug: categoriaForm.slug
         }).then(() => {
-            req.flash('success_msg', 'Categoria "' + nome + '" foi atualizada com sucesso!')
+            req.flash('success_msg', 'Categoria "' + categoriaForm.nome + '" foi atualizada com sucesso!')
             return res.redirect('/admin/categorias')
         }).catch((erro) => {
             req.flash('error_msg', 'Categoria não atualizada pelo sistema')
@@ -149,7 +146,7 @@ router.get('/', (req, res) => {
     router.get('/postagem/editar/:id', (req, res) => {
         Postagem.findById(req.params.id).lean().then((postagem) => {
             Categoria.find().lean().then((categorias) => {
-                return res.render('admin/editarPostagem', {postagem: postagem, categorias: categorias})
+                return res.render('admin/editarPostagem', {postagem: postagem, post_id: postagem._id, categorias: categorias})
             })
         }).catch((erro) => {
             req.flash('error_msg', 'Postagem não existe')
@@ -167,115 +164,75 @@ router.get('/', (req, res) => {
         })
     })
 
-    router.post('/postagem/editar/confirmado', (req, res) => {
-        const form = {
-            _id: req.body.id,
+    router.post('/postagem/nova', (req, res) => {
+        let postagemForm = {
             titulo: req.body.titulo,
             descricao: req.body.descricao,
             slug: req.body.slug,
             conteudo: req.body.conteudo,
             categoria: req.body.categoria
         }
-        erros = []
+       
+        const { value, error } = postagemSchema.validate(postagemForm, { messages })
 
-        if (!form.titulo || typeof form.titulo == undefined || form.titulo == null){
-            erros.push({texto: 'Título inválido'})
-        }
-        if (!form.descricao || typeof form.descricao == undefined || form.descricao == null){
-            erros.push({texto: 'Descrição inválida'})
-        }
-        if (!form.slug || typeof form.slug == undefined || form.slug == null){
-            erros.push({texto: 'Slug inválido'})
-        }
-        if (!form.conteudo || typeof form.conteudo == undefined || form.conteudo == null){
-            erros.push({texto: 'Conteúdo inválido'})
-        }
-
-        if (!form.categoria || typeof form.categoria == undefined || form.categoria == null){
-            erros.push({texto: 'Selecione uma categoria'})
-        }
-
-        if (!isValidObjectId(form.categoria)){
-            erros.push({texto: 'Categoria inválida'})
-        } 
-        
-        if (!isValidObjectId(form._id)){
-            req.flash('error_msg', 'Postagem não existe')
-            return res.redirect('/admin/postagens')
-        } 
-
-        if (erros.length > 0){
+        if (error){
             Categoria.find().lean().then((categorias) => {
-                return res.render('admin/editarPostagem', {categorias: categorias, erros: erros, postagem: form})
+                return res.render('admin/adicionarPostagem', {categorias: categorias, erro: error.message, postagem: postagemForm})
             }).catch((erro) => {
                 req.flash('error_msg', 'Erro no carregamento das categorias. ' + erro)
                 return res.redirect('/admin/postagens')
             })
+            return
         }
 
-        Postagem.findByIdAndUpdate(form._id, form).then((postagem) => {
+        postagemForm = value
+
+        Postagem.create({
+            titulo: postagemForm.titulo,
+            descricao: postagemForm.descricao,
+            slug: postagemForm.slug,
+            conteudo: postagemForm.conteudo,
+            categoria: postagemForm.categoria
+        }).then(() => {
+            req.flash('success_msg', 'Postagem "' + postagemForm.titulo + '" foi publicada com sucesso!')
+            res.redirect('/admin/postagens')
+        }).catch((erro) => {
+            req.flash('error_msg', 'Erro, postagem não publicada. ' + erro)
+             res.render('admin/adicionarPostagem', {form: postagemForm})
+        })
+
+    })
+
+    router.post('/postagem/editar/confirmado', (req, res) => {
+        let postagemForm = {
+            titulo: req.body.titulo,
+            descricao: req.body.descricao,
+            slug: req.body.slug,
+            conteudo: req.body.conteudo,
+            categoria: req.body.categoria
+        }
+
+        const { value, error } = postagemSchema.validate(postagemForm, { messages }) 
+
+        if (error){
+            Categoria.find().lean().then((categorias) => {
+                return res.render('admin/editarPostagem', {categorias: categorias, erro: error.message, postagem: postagemForm, post_id: req.body.id})
+            }).catch((erro) => {
+                req.flash('error_msg', 'Erro no carregamento das categorias. ' + erro)
+                return res.redirect('/admin/postagens')
+            })
+            return
+        }
+
+        postagemForm = value
+
+        Postagem.findByIdAndUpdate(req.body.id, postagemForm).then((postagem) => {
             req.flash('success_msg', 'Postagem "' + postagem.titulo + '" editada com sucesso!')
             return res.redirect('/admin/postagens')
         }).catch((erro) => {
             req.flash('error_msg', 'Erro durate a edição. ' + erro)
-            return res.redirect('/admin/postagem/editar/' + postagem._id)
+            return res.redirect('/admin/postagem/editar/' + req.body.id)
         })
-    })
-
-    router.post('/postagem/nova', (req, res) => {
-        const form = {
-            titulo: req.body.titulo,
-            descricao: req.body.descricao,
-            slug: req.body.slug,
-            conteudo: req.body.conteudo,
-            categoria: req.body.categoria
-        }
-        erros = []
-
-        if (!form.titulo || typeof form.titulo == undefined || form.titulo == null || form.titulo == ""){
-            erros.push({texto: 'Título inválido'})
-        }
-        if (!form.descricao || typeof form.descricao == undefined || form.descricao == null){
-            erros.push({texto: 'Descrição inválida'})
-        }
-        if (!form.slug || typeof form.slug == undefined || form.slug == null){
-            erros.push({texto: 'Slug inválido'})
-        }
-        if (!form.conteudo || typeof form.conteudo == undefined || form.conteudo == null){
-            erros.push({texto: 'Conteúdo inválido'})
-        }
-
-        if (!form.categoria || typeof form.categoria == undefined || form.categoria == null){
-            erros.push({texto: 'Selecione uma categoria'})
-        }
-
-        if (!isValidObjectId(form.categoria)){
-            erros.push({texto: 'Categoria inválida'})
-        }
-
-        if (erros.length > 0){
-            Categoria.find().lean().then((categorias) => {
-                return res.render('admin/adicionarPostagem', {categorias: categorias, erros: erros, form: form})
-            }).catch((erro) => {
-                req.flash('error_msg', 'Erro no carregamento das categorias. ' + erro)
-                return res.redirect('/admin/postagens')
-            })
-        }
-
-        Postagem.create({
-            titulo: form.titulo,
-            descricao: form.descricao,
-            slug: form.slug,
-            conteudo: form.conteudo,
-            categoria: form.categoria
-        }).then(() => {
-            req.flash('success_msg', 'Postagem "' + form.titulo + '" foi publicada com sucesso!')
-            return res.redirect('/admin/postagens')
-        }).catch((erro) => {
-            req.flash('error_msg', 'Erro, postagem não publicada. ' + erro)
-            return res.render('admin/adicionarPostagem', {form: form})
-        })
-
     })
 
 module.exports = router

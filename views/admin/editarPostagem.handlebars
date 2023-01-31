@@ -1,12 +1,12 @@
-{{#each erros}}
-    <div class="alert alert-danger">{{texto}}</div>
-{{/each}}
+{{#if erro}}
+    <div class="alert alert-danger">{{erro}}</div>
+{{/if}}
 <h2>Editor de Postagem:</h2>
 <div class="card">
     <div class="card-body">
         <form action="/admin/postagem/editar/confirmado" method="POST">
 
-            <input type="hidden" name="id" value="{{postagem._id}}">
+            <input type="hidden" name="id" value="{{post_id}}">
 
             <label for="titulo">Título: </label>
             <input type="text" class="form-control" name="titulo" placeholder="Título da postagem" value="{{postagem.titulo}}" required>
