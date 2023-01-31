@@ -1,0 +1,41 @@
+{{#each erros}}
+    <div class="alert alert-danger">{{texto}}</div>
+{{/each}}
+<h2>Editor de Postagem:</h2>
+<div class="card">
+    <div class="card-body">
+        <form action="/admin/postagem/editar/confirmado" method="POST">
+
+            <input type="hidden" name="id" value="{{postagem._id}}">
+
+            <label for="titulo">Título: </label>
+            <input type="text" class="form-control" name="titulo" placeholder="Título da postagem" value="{{postagem.titulo}}" required>
+            
+            <label for="descricao">Descrição: </label>
+            <input type="text" class="form-control" name="descricao" placeholder="Descrição da postagem" value="{{postagem.descricao}}" required>
+
+            <label for="slug">Slug: </label>
+            <input type="text" class="form-control" name="slug" placeholder=" Slug da postagem" value="{{postagem.slug}}" required>
+
+            <label for="categoria">Categoria da postagem</label>
+            <select name="categoria" class="form-control form-select">
+                <option disabled> Selecione a categoria </option>
+                {{#each categorias}}
+                        <option value="{{_id}}" id="{{_id}}">{{nome}}</option>
+                {{/each}}
+            </select>
+
+            <label for="conteudo">Conteúdo</label>
+            <textarea name="conteudo" rows="15" class="form-control form" placeholder="Conteúdo da postagem" required>{{postagem.conteudo}}</textarea>
+
+            <button class="btn btn-success mt-2" type="submit">Editar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let id = '{{postagem.categoria}}'
+        document.getElementById(id).setAttribute('selected', 'selected')
+    })
+</script>

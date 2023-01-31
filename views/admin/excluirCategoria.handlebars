@@ -1,0 +1,14 @@
+<center>
+<h3>Confirma a exclusõa de Categoria: {{categoria.nome}}</h3>
+
+<div class="card align-content-center">
+    <div class="card-body">
+        <form action="/admin/categoria/excluir/confirmado" method="POST">
+            <input type="hidden" name="id" value="{{categoria._id}}">
+            <button class="btn btn-danger mt-2" type="submit">Excluir</button>
+            <a href="/admin/categorias"><span class="btn btn-outline-info mt-2">Manter</span></a>
+        </form>
+    </div>
+    
+</div>
+</center>

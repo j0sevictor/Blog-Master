@@ -1,0 +1,23 @@
+declare const messages: {
+    'object.and': string;
+    'object.assert': string;
+    'object.base': string;
+    'object.instance': string;
+    'object.length': string;
+    'object.max': string;
+    'object.min': string;
+    'object.missing': string;
+    'object.nand': string;
+    'object.oxor': string;
+    'object.pattern.match': string;
+    'object.refType': string;
+    'object.regex': string;
+    'object.rename.multiple': string;
+    'object.rename.override': string;
+    'object.schema': string;
+    'object.unknown': string;
+    'object.with': string;
+    'object.without': string;
+    'object.xor': string;
+};
+export default messages;

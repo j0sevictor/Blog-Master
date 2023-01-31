@@ -1,0 +1,20 @@
+declare const messages: {
+    'array.base': string;
+    'array.excludes': string;
+    'array.hasKnown': string;
+    'array.hasUnknown': string;
+    'array.includes': string;
+    'array.includesRequiredBoth': string;
+    'array.includesRequiredKnowns': string;
+    'array.includesRequiredUnknowns': string;
+    'array.length': string;
+    'array.max': string;
+    'array.min': string;
+    'array.orderedLength': string;
+    'array.sort': string;
+    'array.sort.mismatching': string;
+    'array.sort.unsupported': string;
+    'array.sparse': string;
+    'array.unique': string;
+};
+export default messages;

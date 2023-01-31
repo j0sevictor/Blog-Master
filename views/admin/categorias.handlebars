@@ -1,0 +1,25 @@
+<a href="/admin/categoria/adicionar">
+    <button class="btn btn-success">+ Adicionar Categoria</button>
+</a>
+
+<hr>
+
+<h2 class="mt-4 mb-4">Categorias: </h2>
+{{#each categorias}}
+    <div class="card mt-2">
+        <div class="card-group">
+            <div class="card-body">
+                <h4>{{nome}}</h4>
+                <small>{{slug}}</small><br>
+                <small>Criado em: {{data_criado}}</small>
+            </div>
+            <div class="card-body align-self-center">
+                <a href="/admin/categoria/editar/{{_id}}"><button class="btn btn-secondary">Editar</button></a>
+                <a href="/admin/categoria/excluir/{{_id}}"><button class="btn btn-danger">Excluir</button></a>
+            </div>
+        </div>
+    </div>
+
+{{else}}
+    <h4>Nenhuma Categoria Registrada.</h4>
+{{/each}}
