@@ -1,5 +1,5 @@
-const express = require('express')
-const router = express.Router()
+const { Router } = require('express')
+const router = Router()
 const ObjectId = require('mongoose').Types.ObjectId
 const Categoria = require('../models/Categoria')
 const Postagem = require('../models/Postagem')
@@ -41,7 +41,7 @@ router.get('/', (req, res) => {
         Categoria.findById(req.params.id).lean().then((categoria) => {
             return res.render('admin/excluirCategoria', {categoria: categoria})
         }).catch((erro) => {
-            req.flash('error_msg', 'Categoria não existe')
+            req.flash('error_msg', 'Categoria não existe.')
             return res.redirect('/admin/categorias')
         })
     })
@@ -76,7 +76,7 @@ router.get('/', (req, res) => {
             req.flash('success_msg', 'Categoria "' + categoriaForm.nome + '" criada com sucesso!')
             return res.redirect('/admin/categorias')
         }).catch((erro) => {
-            req.flash('error_msg', 'Categoria não salva pelo sistema')
+            req.flash('error_msg', 'Categoria não salva pelo sistema, titulo/slug pode já estar em uso. ' + erro)
             return res.redirect('/admin/categoria/adicionar')
         })
     })
@@ -112,7 +112,7 @@ router.get('/', (req, res) => {
             req.flash('success_msg', 'Categoria "' + categoriaForm.nome + '" foi atualizada com sucesso!')
             return res.redirect('/admin/categorias')
         }).catch((erro) => {
-            req.flash('error_msg', 'Categoria não atualizada pelo sistema')
+            req.flash('error_msg', 'Categoria não salva pelo sistema, titulo/slug pode já estar em uso. ' + erro)
             return res.redirect('/admin/categoria/editar/' + req.body.id)
         })
     })
@@ -197,8 +197,13 @@ router.get('/', (req, res) => {
             req.flash('success_msg', 'Postagem "' + postagemForm.titulo + '" foi publicada com sucesso!')
             res.redirect('/admin/postagens')
         }).catch((erro) => {
-            req.flash('error_msg', 'Erro, postagem não publicada. ' + erro)
-             res.render('admin/adicionarPostagem', {form: postagemForm})
+            erro = 'Titulo/slug pode já estar sendo usado. ' + erro
+            Categoria.find().lean().then((categorias) => {
+                res.render('admin/adicionarPostagem', {postagem: postagemForm, categorias: categorias, erro: erro})
+            }).catch((erro) => {
+                req.flash('error_msg', 'Erro no carregamento das categorias. ' + erro)
+                return res.redirect('/admin/postagens')
+            })
         })
 
     })
@@ -230,7 +235,7 @@ router.get('/', (req, res) => {
             req.flash('success_msg', 'Postagem "' + postagem.titulo + '" editada com sucesso!')
             return res.redirect('/admin/postagens')
         }).catch((erro) => {
-            req.flash('error_msg', 'Erro durate a edição. ' + erro)
+            req.flash('error_msg', 'Erro durate a edição, titulo/slug pode já estar sendo usado. ' + erro)
             return res.redirect('/admin/postagem/editar/' + req.body.id)
         })
     })

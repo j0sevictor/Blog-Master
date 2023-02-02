@@ -6,16 +6,22 @@
     <div class="card-body">
         <form action="/admin/postagem/editar/confirmado" method="POST">
 
+            <script src="/js/slugCreator.js"></script>
+            <script>
+                slugCreator('#titulo')
+            </script>
+
             <input type="hidden" name="id" value="{{post_id}}">
 
             <label for="titulo">Título: </label>
-            <input type="text" class="form-control" name="titulo" placeholder="Título da postagem" value="{{postagem.titulo}}" required>
+            <input type="text" id="titulo" class="form-control" name="titulo" placeholder="Título da postagem" value="{{postagem.titulo}}" required>
             
             <label for="descricao">Descrição: </label>
             <input type="text" class="form-control" name="descricao" placeholder="Descrição da postagem" value="{{postagem.descricao}}" required>
 
             <label for="slug">Slug: </label>
-            <input type="text" class="form-control" name="slug" placeholder=" Slug da postagem" value="{{postagem.slug}}" required>
+            <input type="text" id="slug" class="form-control" placeholder=" Slug da postagem" value="{{postagem.slug}}" required disabled>
+            <input type="hidden" name="slug" id="slughdd">
 
             <label for="categoria">Categoria da postagem</label>
             <select name="categoria" class="form-control form-select">

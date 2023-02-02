@@ -3,11 +3,13 @@ const { Schema, model } = require('mongoose')
 const postagemSchema = new Schema({
     titulo: {
         type: String,
-        require: true
+        require: true,
+        unique: true
     },
     slug: {
         type: String,
-        require: true
+        require: true,
+        unique: true
     },
     descricao: {
         type: String,

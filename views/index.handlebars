@@ -1,0 +1,28 @@
+<div class="p-2 mb-4 text-bg-dark rounded-3">
+    <div class="container-fluid py-2">
+        <h1 class="display-6 fw-bold">Bem-vindo ao Blog Master</h1>
+        <hr>
+        <p class="col-md-9 fs-5">Somos uma organização simples que preza pela distribuição de informação de qualidade. Connheça nossas postagens e comunidade.</p>
+        <p class="fs-6">Tecnologias usadas no desenvolvimento: Nodejs + Express + MongoDB</p>
+        <button class="btn btn-outline-light btn-lg" type="button">Criar Conta</button>
+    </div>
+</div>
+
+<h2>Postagens Recentes:</h2>
+{{#if erro}}
+    <h4>Erro ao carregar as postagens</h4>
+    <p>{{erro}}</p>
+{{/if}}
+{{#each postagens}}
+    <div class="card d-inline-block mt-4">
+        <div class="card-body">
+            <h3>{{titulo}}</h3>
+            <h6>{{categoria.nome}}</h6>
+            <small>{{descricao}}</small><br>
+            <small class="text-light-emphasis">{{data_postagem}}</small><br>
+            <a href="/postagem/ler/{{slug}}"><button class="btn btn-outline-primary mt-4">Leia Mais</button></a>
+        </div>
+    </div>
+    {{else}}
+    <h4>Nenhuma postagem Cadastrada</h4>
+{{/each}}

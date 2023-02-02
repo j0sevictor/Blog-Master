@@ -6,11 +6,17 @@
     <div class="card-body">
         <form action="/admin/categoria/editar/confirmado" method="POST">
             <input type="hidden" name="id" value="{{categoria._id}}">
+
+            <script src="/js/slugCreator.js"></script>
+            <script>
+                slugCreator('#nome')
+            </script>
             
             <label for="nome">Nome: </label>
-            <input type="text" class="form-control" name="nome" placeholder="Nome da categoria" value="{{categoria.nome}}">
+            <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome da categoria" value="{{categoria.nome}}">
             <label for="slug">Slug: </label>
-            <input type="text" class="form-control" name="slug" placeholder=" Slug da categoria" value="{{categoria.slug}}">
+            <input type="text" class="form-control" id="slug" placeholder=" Slug da categoria" value="{{categoria.slug}}" disabled>
+            <input type="hidden" id="slughdd" name="slug">
             
             <button class="btn btn-success mt-2" type="submit">Editar</button>
         </form>

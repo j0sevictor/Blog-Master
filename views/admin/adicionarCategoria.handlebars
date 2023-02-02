@@ -5,10 +5,16 @@
 <div class="card">
     <div class="card-body">
         <form action="/admin/categoria/nova" method="POST">
+            <script src="/js/slugCreator.js"></script>
+            <script>
+                slugCreator('#nome')
+            </script>
+
             <label for="nome">Nome: </label>
-            <input type="text" class="form-control" name="nome" placeholder="Nome da categoria" value="{{nome}}" required>
+            <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome da categoria" value="{{nome}}" required>
             <label for="slug">Slug: </label>
-            <input type="text" class="form-control" name="slug" placeholder=" Slug da categoria" value="{{slug}}" required>
+            <input type="text" class="form-control" id="slug" placeholder=" Slug da categoria" value="{{slug}}" required disabled>
+            <input type="hidden" id="slughdd" name="slug">
             
             <button class="btn btn-success mt-2" type="submit">Criar</button>
         </form>
