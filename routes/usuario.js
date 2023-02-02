@@ -5,6 +5,9 @@ const { messages } = require('joi-translation-pt-br')
 const usuarioSchema = require('../controllers/usuarioSchema')
 const bcrypt = require('bcryptjs')
 
+const passport = require('passport')
+require('../config/auth')(passport)
+
 router.get('/registro', (req, res) => {
     res.render('usuario/registro')
 })
@@ -50,22 +53,20 @@ router.get('/login', (req, res) => {
     res.render('usuario/login')
 })
 
-router.post('/login/logar', (req, res) => {
-    Usuario.findOne({email: req.body.email}).then((usuario) => {
-        if (usuario) {
+router.post('/login/verificacao', passport.authenticate('local', {
+    failureRedirect: '/usuario/login',
+    successRedirect: '/',
+    failureFlash: true
+})
+)
 
-            if (bcrypt.compareSync(req.body.senha, usuario.senha)){
-                req.flash('success_msg', 'Logado com sucesso')
-                res.redirect('/')
-            } else {
-                res.render('usuario/login', {email: usuario.email, erro: 'Senha Incorreta'})
-            }
-            
+router.get('/logout', (req, res) => {
+    req.logout((erro) => {
+        if (erro) {
+            req.flash('error_msg', 'Erro no processo de logout. ' + erro)
         } else {
-            res.render('usuario/login', {email: req.body.email, erro: 'Email não registrado'})
+            req.flash('success_msg', 'Deslogado com sucesso!')
         }
-    }).catch((erro) => {
-        req.flash('error_msg', 'Não logado. Erro na requisição de login')
         res.redirect('/')
     })
 })

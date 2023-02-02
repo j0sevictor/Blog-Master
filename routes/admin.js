@@ -6,6 +6,7 @@ const Postagem = require('../models/Postagem')
 const categoriaSchema = require('../controllers/categoriaSchema')
 const postagemSchema = require('../controllers/postagemSchema')
 const { messages } = require('joi-translation-pt-br')
+const { eAdmin } = require('../helpers/eAdmin')
 
 /*
 function isValidObjectId(id){     
@@ -18,13 +19,10 @@ function isValidObjectId(id){
 }
 */
 
-router.get('/', (req, res) => {
-    return res.render('admin/index')
-})
 
 // Rotas relacionadas as categorias ------------
 
-    router.get('/categorias', (req, res) => {
+    router.get('/categorias', eAdmin, (req, res) => {
         Categoria.find().sort({nome: 'asc'}).lean().then((categorias) => {  
             return res.render('admin/categorias', {categorias: categorias})
         }).catch((erro) => {
@@ -33,11 +31,11 @@ router.get('/', (req, res) => {
         })
     })
 
-    router.get('/categoria/adicionar', (req, res) => {
+    router.get('/categoria/adicionar', eAdmin, (req, res) => {
         return res.render('admin/adicionarCategoria')
     })
 
-    router.get('/categoria/excluir/:id', (req, res) => {
+    router.get('/categoria/excluir/:id', eAdmin, (req, res) => {
         Categoria.findById(req.params.id).lean().then((categoria) => {
             return res.render('admin/excluirCategoria', {categoria: categoria})
         }).catch((erro) => {
@@ -46,7 +44,7 @@ router.get('/', (req, res) => {
         })
     })
 
-    router.get('/categoria/editar/:id', (req, res) => {
+    router.get('/categoria/editar/:id', eAdmin, (req, res) => {
         Categoria.findById(req.params.id).lean().then((categoria) => {
             return res.render('admin/editarCategoria', {categoria: categoria})
         }).catch((erro) => {
@@ -119,13 +117,13 @@ router.get('/', (req, res) => {
 
 // Rotas relacionadas as postagens ----------------------------
 
-    router.get('/postagens', (req, res) => {
+    router.get('/postagens', eAdmin, (req, res) => {
         Postagem.find().populate('categoria').sort({categoria: 'asc', data_postagem: 'desc'}).lean().then((postagens) => {
             return res.render('admin/postagens', {postagens: postagens})
         })
     })
 
-    router.get('/postagem/adicionar', (req, res) => {
+    router.get('/postagem/adicionar', eAdmin, (req, res) => {
         Categoria.find().lean().then((categorias) => {
             return res.render('admin/adicionarPostagem', {categorias: categorias})
         }).catch((erro) => {
@@ -134,7 +132,7 @@ router.get('/', (req, res) => {
         })
     })
 
-    router.get('/postagem/excluir/:id', (req, res) => {
+    router.get('/postagem/excluir/:id', eAdmin, (req, res) => {
         Postagem.findById(req.params.id).lean().then((postagem) => {
             return res.render('admin/excluirPostagem', {postagem: postagem})
         }).catch((erro) => {
@@ -143,7 +141,7 @@ router.get('/', (req, res) => {
         })
     })
 
-    router.get('/postagem/editar/:id', (req, res) => {
+    router.get('/postagem/editar/:id', eAdmin, (req, res) => {
         Postagem.findById(req.params.id).lean().then((postagem) => {
             Categoria.find().lean().then((categorias) => {
                 return res.render('admin/editarPostagem', {postagem: postagem, post_id: postagem._id, categorias: categorias})

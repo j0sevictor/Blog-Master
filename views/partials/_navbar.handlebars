@@ -14,9 +14,18 @@
         </li>
       </ul>
     </div>
-    <form class="d-flex">
-      <a href="/usuario/login"><button class="btn btn-outline-success me-2" type="button">Login</button></a>
-      <a href="/usuario/registro"><button class="btn btn-outline-secondary" type="button">Registrar-se</button></a>
-    </form>
+    {{#if user}}
+      {{#each user}}
+        {{#if nome}}
+          <span class="navbar-brand">{{nome}}</span>
+          <a href="/usuario/logout"><button class="btn btn-outline-secondary me-2" type="button">Logout</button></a>
+        {{/if}}
+      {{/each}}
+    {{else}}
+      <form class="d-flex">
+        <a href="/usuario/login"><button class="btn btn-outline-success me-2" type="button">Login</button></a>
+        <a href="/usuario/registro"><button class="btn btn-outline-secondary" type="button">Registrar-se</button></a>
+      </form>
+    {{/if}}
   </div>
 </nav>

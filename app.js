@@ -12,6 +12,7 @@
 
     const Postagem = require('./models/Postagem')
     const Categoria = require('./models/Categoria')
+const passport = require('passport')
 
 // Constantes
     const PORTA = '3000'
@@ -25,11 +26,15 @@
             resave: true,
             saveUninitialized: true
         }))
+        app.use(passport.initialize())
+        app.use(passport.session())
         app.use(flash())
     //MIDLEWARE
         app.use((req, res, next) => {
             res.locals.success_msg  = req.flash('success_msg')
             res.locals.error_msg = req.flash('error_msg')
+            res.locals.error = req.flash('error')
+            res.locals.user = req.user || null
             next()
         })
     //body-parser
